@@ -685,9 +685,11 @@ if ( ! class_exists( 'Astra_Sites' ) ) :
 			if ( ! current_user_can( 'manage_options' ) ) {
 				wp_send_json_error( 'You are not allowed to perform this action', 'astra-sites' );
 			}
+			// Verify Nonce.
+			check_ajax_referer( 'astra-sites', '_ajax_nonce' );
 
 			$new_favorites = array();
-			$site_id       = isset( $_POST['site_id'] ) ? sanitize_key( $_POST['site_id'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$site_id       = isset( $_POST['site_id'] ) ? sanitize_key( $_POST['site_id'] ) : '';
 
 			if ( empty( $site_id ) ) {
 				wp_send_json_error();
@@ -699,7 +701,7 @@ if ( ! class_exists( 'Astra_Sites' ) ) :
 				$new_favorites = $favorite_settings;
 			}
 
-			if ( 'false' === $_POST['is_favorite'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			if ( 'false' === $_POST['is_favorite'] ) {
 				if ( in_array( $site_id, $new_favorites, true ) ) {
 					$key = array_search( $site_id, $new_favorites, true );
 					unset( $new_favorites[ $key ] );
@@ -1562,8 +1564,6 @@ if ( ! class_exists( 'Astra_Sites' ) ) :
 			}
 
 			wp_enqueue_script( 'astra-sites-install-theme', ASTRA_SITES_URI . 'inc/assets/js/install-theme.js', array( 'jquery', 'updates' ), ASTRA_SITES_VER, true );
-			wp_enqueue_style( 'astra-sites-install-theme', ASTRA_SITES_URI . 'inc/assets/css/install-theme.css', null, ASTRA_SITES_VER, 'all' );
-			wp_style_add_data( 'astra-sites-install-theme', 'rtl', 'replace' );
 
 			$data = apply_filters(
 				'astra_sites_install_theme_localize_vars',
